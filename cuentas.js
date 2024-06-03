@@ -1,77 +1,22 @@
-const { cuentas } = require('../Banco_Social');
+var express = require('express');
+var router = express.Router();
+var cuentaController = require('../controllers/cuentas');
 
-class CuentaController {
-    AñadirCuentaPrestamo(req, res) {
-        const { id, usuarioId, balance, tasaInteres, fechaProximoPago } = req.body;
-        const nuevaCuenta = { id: parseInt(id), tipo: 'prestamo', usuarioId: parseInt(usuarioId), balance: parseFloat(balance), tasaInteres: parseFloat(tasaInteres), fechaProximoPago };
-        cuentas.push(nuevaCuenta);
-        res.status(201).json({ mensaje: 'Cuenta de préstamo añadida', cuenta: nuevaCuenta });
-    }
+// Añadir cuentas
+router.post('/prestamos', (req, res) => cuentaController.AñadirCuentaPrestamo(req, res));
+router.post('/ahorros', (req, res) => cuentaController.AñadirCuentaAhorro(req, res));
 
-    AñadirCuentaAhorro(req, res) {
-        const { id, usuarioId, balance, tasaInteres } = req.body;
-        const nuevaCuenta = { id: parseInt(id), tipo: 'ahorro', usuarioId: parseInt(usuarioId), balance: parseFloat(balance), tasaInteres: parseFloat(tasaInteres) };
-        cuentas.push(nuevaCuenta);
-        res.status(201).json({ mensaje: 'Cuenta de ahorro añadida', cuenta: nuevaCuenta });
-    }
+// Editar cuentas
+router.put('/prestamos/:id', (req, res) => cuentaController.EditarCuentaPrestamo(req, res));
+router.put('/ahorros/:id', (req, res) => cuentaController.EditarCuentaAhorro(req, res));
 
-    EditarCuentaPrestamo(req, res) {
-        const { id } = req.params;
-        const { balance, tasaInteres, fechaProximoPago } = req.body;
-        const cuenta = cuentas.find(c => c.id === parseInt(id) && c.tipo === 'prestamo');
-        if (cuenta) {
-            cuenta.balance = balance !== undefined ? parseFloat(balance) : cuenta.balance;
-            cuenta.tasaInteres = tasaInteres !== undefined ? parseFloat(tasaInteres) : cuenta.tasaInteres;
-            cuenta.fechaProximoPago = fechaProximoPago || cuenta.fechaProximoPago;
-            res.json({ mensaje: 'Cuenta de préstamo actualizada', cuenta });
-        } else {
-            res.status(404).json({ mensaje: 'Cuenta de préstamo no encontrada' });
-        }
-    }
+// Eliminar cuentas
+router.delete('/:id', (req, res) => cuentaController.EliminarCuenta(req, res));
 
-    EditarCuentaAhorro(req, res) {
-        const { id } = req.params;
-        const { balance, tasaInteres } = req.body;
-        const cuenta = cuentas.find(c => c.id === parseInt(id) && c.tipo === 'ahorro');
-        if (cuenta) {
-            cuenta.balance = balance !== undefined ? parseFloat(balance) : cuenta.balance;
-            cuenta.tasaInteres = tasaInteres !== undefined ? parseFloat(tasaInteres) : cuenta.tasaInteres;
-            res.json({ mensaje: 'Cuenta de ahorro actualizada', cuenta });
-        } else {
-            res.status(404).json({ mensaje: 'Cuenta de ahorro no encontrada' });
-        }
-    }
+// Mostrar próxima fecha de pago
+router.get('/prestamos/:id/proximafecha', (req, res) => cuentaController.MostrarProximaFechaPago(req, res));
 
-    EliminarCuenta(req, res) {
-        const { id } = req.params;
-        const index = cuentas.findIndex(c => c.id === parseInt(id));
-        if (index !== -1) {
-            const eliminada = cuentas.splice(index, 1);
-            res.json({ mensaje: 'Cuenta eliminada', cuenta: eliminada });
-        } else {
-            res.status(404).json({ mensaje: 'Cuenta no encontrada' });
-        }
-    }
+// Mostrar resumen por tipos de cuentas
+router.get('/resumen/cuentas', (req, res) => cuentaController.MostrarResumenCuentas(req, res));
 
-    MostrarProximaFechaPago(req, res) {
-        const { id } = req.params;
-        const cuenta = cuentas.find(c => c.id === parseInt(id) && c.tipo === 'prestamo');
-        if (cuenta) {
-            res.json({ fechaProximoPago: cuenta.fechaProximoPago });
-        } else {
-            res.status(404).json({ mensaje: 'Cuenta de préstamo no encontrada' });
-        }
-    }
-
-    MostrarResumenCuentas(req, res) {
-        const resumen = {
-            totalAhorro: cuentas.filter(c => c.tipo === 'ahorro').reduce((sum, c) => sum + c.balance, 0),
-            totalPrestamo: cuentas.filter(c => c.tipo === 'prestamo').reduce((sum, c) => sum + c.balance, 0),
-            promedioTasaInteresAhorro: cuentas.filter(c => c.tipo === 'ahorro').reduce((sum, c, _, arr) => sum + c.tasaInteres / arr.length, 0),
-            promedioTasaInteresPrestamo: cuentas.filter(c => c.tipo === 'prestamo').reduce((sum, c, _, arr) => sum + c.tasaInteres / arr.length, 0)
-        };
-        res.json(resumen);
-    }
-}
-
-module.exports = new CuentaController();
+module.exports = router;
