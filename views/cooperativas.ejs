@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cooperativas</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <h1>Cooperativas</h1>
+    <h2>Agregar Nueva Cooperativa</h2>
+    <form action="/cooperativas" method="post">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <label for="usuariosDeCooperativa">Usuarios (IDs separados por comas):</label>
+        <input type="text" id="usuariosDeCooperativa" name="usuariosDeCooperativa" required>
+        <button type="submit">Agregar Cooperativa</button>
+    </form>
+
+    <h2>Lista de Cooperativas</h2>
+    <ul>
+        <% cooperativas.forEach(function(cooperativa) { %>
+            <li>
+                <%= cooperativa.nombre %>
+                <ul>
+                    <% cooperativa.usuariosDeCooperativa.forEach(function(usuarioId) { %>
+                        <li>Usuario ID: <%= usuarioId %></li>
+                    <% }) %>
+                </ul>
+                <a href="/cooperativas/<%= cooperativa.id %>/editar">Editar</a>
+                <form action="/cooperativas/<%= cooperativa.id %>?_method=DELETE" method="post" style="display:inline;">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </li>
+        <% }) %>
+    </ul>
+</body>
+</html>
