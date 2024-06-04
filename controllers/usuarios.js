@@ -61,7 +61,7 @@ class UsuarioController {
                 cuentasAhorros
             });
         } else {
-            res.status(404).send('No se encontró el usuario en la base de datos');
+            res.status(404).json({ mensaje: 'No se encontró el usuario en la base de datos' });
         }
     }
 }

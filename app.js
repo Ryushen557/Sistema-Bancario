@@ -6,7 +6,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var usuarioRouter = require('./routes/usuarios');
-const cuentaRouter = require('./routes/cuentas');
+var cuentaRouter = require('./routes/cuentas'); // Aquí se define el router de cuentas
 var cooperativaRouter = require('./routes/cooperativas');
 
 var app = express();
@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/usuarios', usuarioRouter);
-app.use('/cuentas', cuentaRouter);
+app.use('/cuentas', cuentaRouter); // Aquí se usa el router de cuentas
 app.use('/cooperativas', cooperativaRouter);
 
 module.exports = app;
